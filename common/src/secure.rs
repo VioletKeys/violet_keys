@@ -96,10 +96,25 @@ pub fn xor_in_place(a: &mut [u8], b: &[u8]) {
     }
 }
 
+/// Generate a 256 bit key.
+pub fn generate_key() -> [u8; 32] {
+    let mut key = [0u8; 32];
+    OsRng.fill_bytes(&mut key);
+    key
+}
+
 #[cfg(test)]
 mod tests {
 
     use super::*;
+
+    #[test]
+    fn generate_key_test() {
+        let key = generate_key();
+        assert_eq!(key.len(), 32);
+        let key2 = generate_key();
+        assert_ne!(key, key2);
+    }
 
     #[test]
     fn xor_test() {
