@@ -97,6 +97,7 @@ pub fn xor_in_place(a: &mut [u8], b: &[u8]) {
 }
 
 /// Generate a 256 bit key.
+#[must_use]
 pub fn generate_key() -> [u8; 32] {
     let mut key = [0u8; 32];
     OsRng.fill_bytes(&mut key);
