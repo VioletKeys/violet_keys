@@ -1,10 +1,6 @@
+pub use crate::proto::env::Envelope;
 use crate::secure::{AesGcmSiv, Crypt};
 use crate::secure_error::SecureError;
-
-pub struct Envelope {
-    id: String,
-    crypt_data: Vec<u8>,
-}
 
 impl Envelope {
     /// Create a new envelope.
@@ -15,12 +11,11 @@ impl Envelope {
     ///
     /// # Errors
     /// If the encryption fails, an error is returned.
-    pub fn new(key_type: String, key: [u8; 32], data: &[u8]) -> Result<Self, SecureError> {
-        let crypt_data = AesGcmSiv::encrypt(key, data)?;
-        Ok(Self {
-            id: key_type,
-            crypt_data,
-        })
+    pub fn encrypt(key_id: String, key: [u8; 32], data: &[u8]) -> Result<Self, SecureError> {
+        let mut envelope = Self::new();
+        envelope.key_id = key_id;
+        envelope.crypt_data = AesGcmSiv::encrypt(key, data)?;
+        Ok(envelope)
     }
 
     /// Decrypt the envelope.
@@ -34,11 +29,6 @@ impl Envelope {
         let data = AesGcmSiv::decrypt(key, self.crypt_data.as_slice())?;
         Ok(data)
     }
-
-    #[must_use]
-    pub fn id(&self) -> &str {
-        self.id.as_str()
-    }
 }
 
 #[cfg(test)]
@@ -50,7 +40,7 @@ mod tests {
         let key = crate::secure::generate_key();
 
         let data = b"Hello, world!";
-        let envelope = Envelope::new("key.id.123".to_string(), key, data);
+        let envelope = Envelope::encrypt("key.id.123".to_string(), key, data);
         let decrypted_data = envelope.unwrap().decrypt(key).unwrap();
         assert_eq!(data, decrypted_data.as_slice());
     }

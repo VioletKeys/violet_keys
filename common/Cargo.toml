@@ -9,9 +9,13 @@ edition = "2021"
 aes-gcm-siv = "*"
 async-trait = "*"
 derive_builder = "*"
+protobuf = "3.*"
 shaku = "*"
 serde = "*"
 serde_json = "*"
 tokio = { version = "*", features = ["full"] }
 tracing = "*"
 uuid = { version = "*", features = ["v4", "serde"] }
+
+[build-dependencies]
+protobuf-codegen = "3.*"
