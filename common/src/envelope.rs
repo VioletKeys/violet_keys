@@ -64,4 +64,16 @@ mod tests {
         let decrypted_data = envelope.unwrap().decrypt(key).unwrap();
         assert_eq!(data, decrypted_data.as_slice());
     }
+
+    #[test]
+    fn test_envelope_base64() {
+        let key = crate::secure::generate_key();
+
+        let data = b"Hello, world!";
+        let envelope = Envelope::encrypt("key.id.123".to_string(), key, data);
+        let base64 = envelope.unwrap().to_base64().unwrap();
+        let envelope = Envelope::from_base64(&base64).unwrap();
+        let decrypted_data = envelope.decrypt(key).unwrap();
+        assert_eq!(data, decrypted_data.as_slice());
+    }
 }
