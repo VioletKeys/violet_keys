@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 aes-gcm-siv = "*"
 async-trait = "*"
+base64 = "0.*"
 derive_builder = "*"
 protobuf = "3.*"
 shaku = "*"

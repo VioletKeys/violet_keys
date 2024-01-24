@@ -1,6 +1,8 @@
 pub use crate::proto::env::Envelope;
 use crate::secure::{AesGcmSiv, Crypt};
 use crate::secure_error::SecureError;
+use base64::{engine::general_purpose::STANDARD, Engine as _};
+use protobuf::Message;
 
 impl Envelope {
     /// Create a new envelope.
@@ -28,6 +30,24 @@ impl Envelope {
     pub fn decrypt(&self, key: [u8; 32]) -> Result<Vec<u8>, SecureError> {
         let data = AesGcmSiv::decrypt(key, self.crypt_data.as_slice())?;
         Ok(data)
+    }
+
+    /// Convert an envelope to base64.
+    ///
+    /// # Errors
+    /// Throws an error if the conversion to bytes fails.
+    pub fn to_base64(&self) -> Result<String, SecureError> {
+        let bytes = self.write_to_bytes()?;
+        Ok(STANDARD.encode(bytes.as_slice()))
+    }
+
+    /// Parse an envelope from base64.
+    ///
+    /// # Errors
+    /// Throws an error if the base64 string is invalid, or the parsing into an envelope fails.
+    pub fn from_base64(base64: &str) -> Result<Self, SecureError> {
+        let bytes = STANDARD.decode(base64).map_err(|_| SecureError)?;
+        Envelope::parse_from_bytes(bytes.as_slice()).map_err(|_| SecureError)
     }
 }
 

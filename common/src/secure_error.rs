@@ -15,6 +15,18 @@ impl std::error::Error for SecureError {
     }
 }
 
+impl From<protobuf::Error> for SecureError {
+    fn from(_error: protobuf::Error) -> Self {
+        SecureError
+    }
+}
+
+impl From<base64::DecodeError> for SecureError {
+    fn from(_error: base64::DecodeError) -> Self {
+        SecureError
+    }
+}
+
 impl From<aes_gcm_siv::Error> for SecureError {
     fn from(_error: aes_gcm_siv::Error) -> Self {
         SecureError
